@@ -1,0 +1,69 @@
+version: "meeting-agent.v1"
+name: ads-meeting-agent
+purpose: "将会议输入转为可审核、可授权、可回写的会议闭环"
+
+states:
+  - id: draft
+    human_gate: "创建会议并确认时间、参会人和关联工作区"
+  - id: prepared
+    human_gate: "查看会前简报和代理授权范围"
+  - id: delegating
+    human_gate: "本人确认委托智能体后进入会议处理"
+  - id: awaiting_review
+    human_gate: "本人审核并确认本地音频转写"
+  - id: in_progress
+    human_gate: "会议继续进行，授权内事项自动处理"
+  - id: confirmed
+    human_gate: "本人确认纪要、行动项负责人和截止日期"
+  - id: completed
+    human_gate: "写回 ADS 后保存最终来源链"
+
+transitions:
+  - from: draft
+    to: prepared
+    action: prepare_meeting
+    guard: "关联工作区存在"
+  - from: prepared
+    to: delegating
+    action: confirm_delegation
+    guard: "participation_mode=delegate 且授权规则已展示"
+  - from: prepared
+    to: in_progress
+    action: accept_speaker_input
+    guard: "participation_mode=self"
+  - from: delegating
+    to: in_progress
+    action: accept_speaker_input
+    guard: "agent_session_state=delegating"
+  - from: in_progress
+    to: in_progress
+    action: escalate_item
+    guard: "命中授权升级条件"
+    side_effect: "创建独立 pending 超权事项；仅暂停该事项，会议和其他输入继续"
+  - from: in_progress
+    to: in_progress
+    action: resolve_item
+    guard: "存在对应 pending 超权事项且 action=approve|edit|reject|defer"
+    side_effect: "记录本人回复并返回原会议"
+  - from: in_progress
+    to: confirmed
+    action: confirm_outputs
+    guard: "无待确认事项且行动项可核对"
+  - from: confirmed
+    to: completed
+    action: writeback_ads
+    guard: "所有行动项具备负责人和截止日期"
+
+failure_branches:
+  model_unavailable: "切换本地规则模式，标记运行状态，不伪造在线模型成功"
+  invalid_output: "拒绝进入写回流程并保留原始输入"
+  speech_runtime_unavailable: "保留文字输入，音频任务标记失败并给出恢复操作"
+  incomplete_action_item: "返回结果页补全，不执行自动写回"
+
+item_states:
+  escalation_item:
+    - pending
+    - deferred
+    - approved
+    - edited
+    - rejected

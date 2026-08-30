@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ads.local/schemas/meeting-analysis-output.schema.json",
+  "title": "ADS Meeting Analysis Output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "meeting_id",
+    "prompt_version",
+    "pre_meeting_brief",
+    "agenda",
+    "transcript_turns",
+    "structured_minutes",
+    "decisions",
+    "action_items",
+    "agent_replies",
+    "writeback_tasks",
+    "ads_relations",
+    "audit_events",
+    "demo_metrics",
+    "metrics",
+    "export_markdown"
+  ],
+  "properties": {
+    "meeting_id": {"type": "string"},
+    "prompt_version": {"type": "string"},
+    "pre_meeting_brief": {"type": "string"},
+    "agenda": {"type": "array", "items": {"$ref": "#/$defs/agenda"}},
+    "transcript_turns": {"type": "array", "items": {"$ref": "#/$defs/transcriptTurn"}},
+    "structured_minutes": {"type": "string"},
+    "decisions": {"type": "array", "items": {"$ref": "#/$defs/decision"}},
+    "action_items": {"type": "array", "items": {"$ref": "#/$defs/actionItem"}},
+    "agent_replies": {"type": "array", "items": {"$ref": "#/$defs/agentReply"}},
+    "writeback_tasks": {"type": "array", "items": {"$ref": "#/$defs/task"}},
+    "ads_relations": {"type": "array", "items": {"$ref": "#/$defs/relation"}},
+    "audit_events": {"type": "array", "items": {"$ref": "#/$defs/auditEvent"}},
+    "demo_metrics": {"$ref": "#/$defs/legacyMetrics"},
+    "metrics": {"$ref": "#/$defs/metrics"},
+    "export_markdown": {"type": "string"}
+  },
+  "$defs": {
+    "agenda": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["topic", "context", "suggested_question"],
+      "properties": {"topic": {"type": "string"}, "context": {"type": "string"}, "suggested_question": {"type": "string"}}
+    },
+    "transcriptTurn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["speaker", "content", "agent_action", "linked_object_ids"],
+      "properties": {"speaker": {"type": "string"}, "content": {"type": "string"}, "agent_action": {"type": "string"}, "linked_object_ids": {"type": "array", "items": {"type": "string"}}}
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "topic", "content", "evidence"],
+      "properties": {"id": {"type": "string"}, "topic": {"type": "string"}, "content": {"type": "string"}, "owner_id": {"type": ["string", "null"]}, "due_date": {"type": ["string", "null"]}, "evidence": {"type": "string"}}
+    },
+    "actionItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "linked_decision_id", "status"],
+      "properties": {"id": {"type": "string"}, "title": {"type": "string"}, "owner_id": {"type": ["string", "null"]}, "due_date": {"type": ["string", "null"]}, "linked_decision_id": {"type": "string"}, "status": {"type": "string"}}
+    },
+    "agentReply": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["question", "decision", "reply", "reason", "evidence_object_ids"],
+      "properties": {"question": {"type": "string"}, "decision": {"enum": ["answer", "confirm", "escalate"]}, "reply": {"type": "string"}, "reason": {"type": "string"}, "evidence_object_ids": {"type": "array", "items": {"type": "string"}}}
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "owner_id", "due_date", "status"],
+      "properties": {"id": {"type": "string"}, "title": {"type": "string"}, "owner_id": {"type": "string"}, "due_date": {"type": "string"}, "status": {"type": "string"}, "source_meeting_id": {"type": ["string", "null"]}, "source_decision_id": {"type": ["string", "null"]}}
+    },
+    "relation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "source_label", "relation", "target_id", "target_label"],
+      "properties": {"source_id": {"type": "string"}, "source_label": {"type": "string"}, "relation": {"type": "string"}, "target_id": {"type": "string"}, "target_label": {"type": "string"}}
+    },
+    "auditEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["time", "actor", "action", "detail"],
+      "properties": {"time": {"type": "string"}, "actor": {"type": "string"}, "action": {"type": "string"}, "detail": {"type": "string"}}
+    },
+    "legacyMetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tasks_created", "escalations"],
+      "properties": {"manual_minutes_effort": {"type": ["string", "null"]}, "agent_minutes_effort": {"type": ["string", "null"]}, "attention_saved": {"type": ["string", "null"]}, "tasks_created": {"type": "integer", "minimum": 0}, "escalations": {"type": "integer", "minimum": 0}}
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["measurement_status", "data_source", "sample_count", "transcript_characters", "minutes_generated_characters", "minutes_edited_characters", "action_items_created", "action_items_written_back", "escalations", "baseline_status"],
+      "properties": {"measurement_status": {"enum": ["pending", "partial", "measured"]}, "data_source": {"type": "string"}, "sample_count": {"type": "integer", "minimum": 0}, "user_attendance_minutes": {"type": ["number", "null"]}, "agent_processing_minutes": {"type": ["number", "null"]}, "decision_confirmation_minutes": {"type": ["number", "null"]}, "transcript_characters": {"type": "integer", "minimum": 0}, "minutes_generated_characters": {"type": "integer", "minimum": 0}, "minutes_edited_characters": {"type": "integer", "minimum": 0}, "action_items_created": {"type": "integer", "minimum": 0}, "action_items_written_back": {"type": "integer", "minimum": 0}, "escalations": {"type": "integer", "minimum": 0}, "baseline_status": {"enum": ["pending", "available"]}, "baseline_minutes": {"type": ["number", "null"]}, "post_process_minutes": {"type": ["number", "null"]}, "savings_percent": {"type": ["number", "null"]}}
+  }
+  }
+}
