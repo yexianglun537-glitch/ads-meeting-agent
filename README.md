@@ -25,10 +25,10 @@ ADS 会议智能体是一套本地运行的会议协作工具，用于管理会�
 启动项目.bat
 ```
 
-或者在 PowerShell 中运行：
+或者在命令提示符（CMD）中运行：
 
-```powershell
-.\start-dev.ps1
+```bat
+start-dev.cmd
 ```
 
 启动脚本会检查环境、安装缺失依赖并启动：

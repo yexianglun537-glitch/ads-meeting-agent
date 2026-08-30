@@ -8,13 +8,13 @@ $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $outputRoot = Join-Path $projectRoot $OutputDirectory
 $stageRoot = Join-Path $outputRoot ".source-package-stage"
 $packageRoot = Join-Path $stageRoot "ADS会议智能体源代码"
-$zipPath = Join-Path $outputRoot "04-ADS会议智能体源代码.zip"
+$zipPath = Join-Path $outputRoot "ADS会议智能体源代码.zip"
 
 $files = @(
     ".gitignore",
     "README.md",
     "THIRD_PARTY_NOTICES.md",
-    "start-dev.ps1",
+    "start-dev.cmd",
     "启动项目.bat",
     "backend/.env.example",
     "backend/requirements.txt",

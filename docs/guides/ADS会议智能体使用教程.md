@@ -84,10 +84,10 @@ http://127.0.0.1:18080
 启动项目.bat
 ```
 
-也可以在 PowerShell 7 中运行：
+也可以在命令提示符（CMD）中运行：
 
-```powershell
-.\start-dev.ps1
+```bat
+start-dev.cmd
 ```
 
 脚本会检查运行环境、创建 Python 虚拟环境、安装缺失依赖，并启动：
