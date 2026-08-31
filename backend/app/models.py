@@ -509,6 +509,26 @@ class SpeechHealth(BaseModel):
     diarization_model_name: str | None = None
 
 
+class SpeechSetupStatus(BaseModel):
+    state: Literal[
+        "idle",
+        "unsupported",
+        "installing_dependencies",
+        "downloading_assets",
+        "verifying",
+        "restart_required",
+        "failed",
+    ]
+    supported: bool
+    python_version: str
+    python_bits: int
+    progress: int = Field(ge=0, le=100)
+    message: str
+    restart_required: bool = False
+    error: str = ""
+    updated_at: str
+
+
 class TranscriptSegment(BaseModel):
     id: str
     sequence: int

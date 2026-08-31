@@ -73,6 +73,7 @@ from app.models import (
     SentAgentReply,
     SpeechConfirmResponse,
     SpeechHealth,
+    SpeechSetupStatus,
     SpeechJob,
     SpeechJobCreateRequest,
     TranscriptFullTextUpdateRequest,
@@ -82,6 +83,8 @@ from app.models import (
     MeetingTranscriptRequest,
     Task,
 )
+from app.speech_setup import get_status as get_speech_setup_status
+from app.speech_setup import start_setup as start_speech_setup
 from app.storage import (
     BACKUP_DIR,
     DB_PATH,
@@ -889,6 +892,19 @@ def speech_health() -> SpeechHealth:
         diarization_available=diarization.ready,
         diarization_model_name=DIARIZATION_MODEL_NAME,
     )
+
+
+@app.get("/api/speech/setup/status", response_model=SpeechSetupStatus)
+def speech_setup_status() -> SpeechSetupStatus:
+    return SpeechSetupStatus(**get_speech_setup_status())
+
+
+@app.post("/api/speech/setup/start", response_model=SpeechSetupStatus)
+def speech_setup_start() -> SpeechSetupStatus:
+    try:
+        return SpeechSetupStatus(**start_speech_setup())
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 @app.get("/api/microphone")

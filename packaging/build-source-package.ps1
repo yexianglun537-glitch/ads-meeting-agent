@@ -58,6 +58,7 @@ $files = @(
     "docs/requirements/ADS会议智能体当前产品需求与验收标准.md",
     "docs/requirements/ADS会议智能体本地语音转文字工具需求文档.md",
     "docs/guides/ADS会议智能体使用教程.md",
+    "docs/guides/轻量源码版升级完整语音说明.md",
     "docs/workflows/meeting-agent-workflow.yaml",
     "docs/workflows/meeting-analysis-output.schema.json"
 )

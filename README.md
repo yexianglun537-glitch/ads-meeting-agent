@@ -29,7 +29,9 @@ start-dev.cmd
 
 轻量源码包用于源码审查和基础演示，可以完成本地规则模式下的文字输入主流程，包括会议创建、会前简报、会议发言、超权确认、纪要/行动项、ADS 写回和审计查看。
 
-本地语音组件未随轻量源码包提供：其中不包含 FFmpeg、`faster-whisper`、说话人分离运行时或语音模型。页面应如实显示语音组件不可用；演示时继续使用文字输入即可。在线模型也需要用户自行提供可用网络和 API Key。
+本地语音组件未随轻量源码包提供：其中不包含 FFmpeg、`faster-whisper`、说话人分离运行时或语音模型。页面应如实显示语音组件不可用；演示时继续使用文字输入即可。
+
+本机已优先支持 **Python 3.13 x64** 的可选“一键配置语音”：启动产品后，在首次启动页或 `设置 → 本地语音` 点击按钮，程序才会联网安装依赖和下载约 800 MB 语音资源。配置结束后手动重启 ADS。Python 3.11、3.12、3.14 仍按轻量文字模式支持，完整语音未逐版验收；需要尝试时按照[轻量源码版升级完整语音说明](docs/guides/轻量源码版升级完整语音说明.md)手动操作。
 
 ## 完整 Windows 发行版
 
@@ -48,7 +50,9 @@ OPENAI_BASE_URL=https://api.openai.com/v1
 OPENAI_MODEL=gpt-4.1-mini
 ```
 
-也可以在产品的 `设置 → 模型服务` 中配置 DeepSeek 或 OpenAI-compatible 模型。API Key 只保存在本地后端，不应写入前端、文档或版本库。
+也可以在产品的 `设置 → 模型服务` 中配置 DeepSeek 或 OpenAI-compatible 模型。DeepSeek 常用服务地址是 `https://api.deepseek.com`，模型名称可填写 `deepseek-chat`；其他 OpenAI 兼容服务必须使用对应服务商提供的 API 根地址和模型名称。保存后先点“测试连接”，再提交一条会议发言，并在“模型调用审计”确认实际 Provider。API Key 只保存在本地后端，不应写入前端、文档或版本库。
+
+Whisper 只负责语音转文字，不负责会议分析和代理回复；在线 AI 模型与本地语音是两套独立配置。
 
 ## 数据与运行文件
 
@@ -97,6 +101,7 @@ Set-Location ..\backend
 - [当前产品需求与验收标准](docs/requirements/ADS会议智能体当前产品需求与验收标准.md)
 - [源码包兼容性交付要求](docs/requirements/2026-08-31-源码包兼容性交付要求.md)
 - [ADS 会议智能体使用教程](docs/guides/ADS会议智能体使用教程.md)
+- [轻量源码版升级完整语音说明](docs/guides/轻量源码版升级完整语音说明.md)
 - [本地语音转文字工具需求](docs/requirements/ADS会议智能体本地语音转文字工具需求文档.md)
 - [ADS 核心 Prompt 与工作流说明](docs/ADS核心Prompt与工作流说明.md)
 
