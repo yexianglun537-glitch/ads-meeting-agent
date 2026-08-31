@@ -1,7 +1,7 @@
 # ADS 会议智能体全面使用教程
 
 > 适用版本：首个本地 Windows 稳定产品版（React + FastAPI + SQLite）  
-> 更新日期：2026-08-27  
+> 更新日期：2026-08-31
 > 适用对象：项目负责人、部门负责人、会议组织者和普通团队成员  
 > 当前产品基线：[`ADS会议智能体当前产品需求与验收标准.md`](../requirements/ADS会议智能体当前产品需求与验收标准.md)
 
@@ -25,12 +25,13 @@ ADS 会议智能体是一套运行在单台 Windows 电脑上的会议协作产�
 
 ## 2. 选择运行方式
 
-普通使用者优先使用 Windows 发行版；开发和调试时使用源码开发版。
+平台评审优先使用轻量源码包；电脑没有兼容 Python 或需要完整本地语音能力时，使用 GitHub 完整 Windows 发行版。开发人员修改代码时再使用开发模式。
 
 | 运行方式 | 适用场景 | 是否需要开发环境 | 默认地址 |
 | --- | --- | --- | --- |
-| Windows 发行版 | 日常使用、离线转写 | 不需要 | `http://127.0.0.1:8000` |
-| 源码开发版 | 开发、调试和修改产品 | 需要 Python 3.11+、Node.js 20+ | 前端 `5173`，后端 `8000` |
+| 轻量源码包 | 平台源码审查、文字输入主流程演示 | Windows 10/11 x64、Python 3.11–3.14 64 位；不需要 Node.js | `http://127.0.0.1:8000/`，占用时自动使用 8001–8010 |
+| 完整 Windows 发行版 | 无兼容 Python 或需要离线转写 | 不需要开发环境 | `http://127.0.0.1:8000/` |
+| 开发模式 | 修改和调试源码 | Python、Node.js | 前端 `5173`，后端 `8000` |
 
 ## 3. 启动 Windows 发行版
 
@@ -39,6 +40,8 @@ ADS 会议智能体是一套运行在单台 Windows 电脑上的会议协作产�
 ```text
 dist/ADS会议智能体-0.1.0-win64.zip
 ```
+
+最新完整 Windows x64 版统一从 [GitHub Releases](https://github.com/yexianglun537-glitch/ads-meeting-agent/releases) 获取。电脑没有兼容 Python，或需要随包提供的 FFmpeg、本地转写和说话人分离能力时，使用该版本。
 
 ### 3.1 解压并启动
 
@@ -74,9 +77,11 @@ http://127.0.0.1:18080
 
 关闭 `ADS会议智能体.exe` 所在的命令窗口，或在该窗口按 `Ctrl+C`。不要在数据库写入或音频转写过程中强制结束进程。
 
-## 4. 启动源码开发版
+## 4. 启动轻量源码包
 
 ### 4.1 一键启动
+
+运行条件：Windows 10/11 x64，已安装 Python 3.11–3.14 的任一 64 位版本。轻量源码包已经包含前端生产文件和离线 Python wheel，不需要 Node.js、npm、PowerShell、Rust、Cargo、管理员权限或首次联网安装。
 
 在项目根目录双击：
 
@@ -90,16 +95,21 @@ http://127.0.0.1:18080
 start-dev.cmd
 ```
 
-脚本会检查运行环境、创建 Python 虚拟环境、安装缺失依赖，并启动：
+脚本会检查 Python、创建或校验虚拟环境、从包内 wheelhouse 离线安装依赖，并启动单个前后端服务：
 
 ```text
-前端：http://127.0.0.1:5173
-后端：http://127.0.0.1:8000
+http://127.0.0.1:8000/
 ```
 
-不要关闭启动窗口。停止开发版时，在该窗口按 `Ctrl+C`。
+8000 被占用时，启动器自动选择 8001–8010 中第一个可用端口；以命令窗口显示并自动打开的实际地址为准。不要关闭启动窗口，停止时在该窗口按 `Ctrl+C`。
 
-### 4.2 手动启动
+轻量源码包可以使用本地规则和文字输入完成会议主流程。本地语音组件未随轻量源码包提供，不包含 FFmpeg、本地转写、说话人分离运行时或语音模型；设置页显示组件不可用是正常边界，演示时继续使用文字输入。
+
+如果没有兼容 Python，请不要现场安装编译工具，直接改用 [GitHub Releases 完整 Windows x64 版](https://github.com/yexianglun537-glitch/ads-meeting-agent/releases)。
+
+### 4.2 开发维护模式
+
+以下命令仅供开发维护人员，不是评委运行轻量源码包的步骤。开发模式会使用 Node.js 和前端 5173 端口。
 
 后端：
 
@@ -115,7 +125,7 @@ Copy-Item .env.example .env
 
 ```powershell
 Set-Location frontend
-npm install
+npm ci
 npm run dev -- --host 127.0.0.1
 ```
 
@@ -277,13 +287,13 @@ API Key 只保存在本机后端。页面不会回显完整密钥，留空保存
 
 ### 8.3 允许在线模型实际参与工作流
 
-源码开发版：把 `backend/.env` 中的配置改为：
+轻量源码包或开发模式：把 `backend/.env` 中的配置改为：
 
 ```env
 USE_MOCK_AI=false
 ```
 
-保存后重启前后端。
+保存后重启产品；轻量源码包仍由同一个启动窗口提供前端和后端。
 
 发行版：先停止已经运行的产品，再在发行目录用 PowerShell 7 启动：
 
@@ -295,6 +305,8 @@ $env:USE_MOCK_AI = "false"
 设置页的 `测试连接` 只证明服务连接，不等于会议分析已经使用该模型。请再提交一条真实会议发言，并在 `模型调用审计` 中核对 Provider、模型、状态、耗时、Token 和 Prompt 版本。
 
 ### 8.4 检查本地语音
+
+本节只适用于完整 Windows 发行版或已经由开发维护人员安装完整语音资源的开发环境。轻量源码包不包含这些组件，应使用文字输入完成主流程。
 
 进入 `设置 → 本地语音`，应看到：
 
@@ -684,7 +696,7 @@ MP3、WAV、M4A、WebM、MP4、FLAC
 ## 18. 推荐的首次完整使用流程
 
 1. 启动产品，完成本人身份和空白工作区初始化。
-2. 在 `设置` 确认本地语音可用，并选择本地规则或配置在线模型。
+2. 选择本地规则或配置在线模型；只有完整发行版需要确认本地语音可用，轻量源码包使用文字输入。
 3. 在 `ADS` 依次建立成员、项目、目标、指标、风险、任务、制度、历史立场和授权。
 4. 在 `创建` 填写一场真实会议，选择本人参加或委托智能体。
 5. 查看会前简报；确认无误后点击页面上方的 `开始会议`。
@@ -703,24 +715,18 @@ MP3、WAV、M4A、WebM、MP4、FLAC
 
 ### 19.1 页面无法打开
 
-开发版分别检查：
+轻量源码包和完整发行版检查命令窗口显示的实际端口；默认地址为：
 
 ```text
 http://127.0.0.1:8000/api/health
-http://127.0.0.1:5173
+http://127.0.0.1:8000/
 ```
 
-发行版检查：
-
-```text
-http://127.0.0.1:8000/api/health
-```
-
-如果端口被占用，关闭旧进程或使用 `--port` 指定其他端口。
+轻量源码包会在 8000 被占用时自动选择 8001–8010。若命令窗口显示其他端口，请将上面地址中的 8000 替换为实际端口。开发模式才需要另外检查前端 5173。
 
 ### 19.2 前端提示无法连接后端
 
-检查开发版后端是否仍在运行，并查看：
+检查启动窗口是否仍在运行。轻量源码包或完整发行版查看 `logs/ads-agent.log`；开发模式查看：
 
 ```text
 logs/backend.log
@@ -756,7 +762,9 @@ logs/backend.log
 
 ### 19.6 本地转写组件未就绪
 
-源码开发版确认：
+轻量源码包不包含本地语音组件，出现未就绪提示是正常边界，请继续使用文字输入。需要离线转写时，改用 [GitHub Releases 完整 Windows x64 版](https://github.com/yexianglun537-glitch/ads-meeting-agent/releases)。
+
+完整发行版或自行配置语音资源的开发环境可确认：
 
 ```text
 runtime/ffmpeg/bin/ffmpeg.exe
@@ -764,7 +772,7 @@ runtime/ffmpeg/bin/ffprobe.exe
 backend/data/models/faster-whisper-small/model.bin
 ```
 
-然后查看 `/api/speech/health` 返回的具体缺失项。发行版缺少这些内部文件时，应重新完整解压发行包。
+然后查看 `/api/speech/health` 返回的具体缺失项。完整发行版缺少这些内部文件时，应重新完整解压发行包。
 
 ### 19.7 转写失败
 
@@ -796,14 +804,14 @@ backend/data/models/faster-whisper-small/model.bin
 
 ## 20. 本地数据位置
 
-### 20.1 源码开发版
+### 20.1 轻量源码包
 
 ```text
-数据库：backend/data/ads_agent.db
-音频：backend/data/audio/
-备份：backend/data/backups/
-模型：backend/data/models/faster-whisper-small/
-日志：logs/backend.log、logs/frontend.log
+数据库：<源码包解压目录>/data/ads_agent.db
+音频：<源码包解压目录>/data/audio/
+备份：<源码包解压目录>/data/backups/
+日志：<源码包解压目录>/logs/ads-agent.log
+虚拟环境：<源码包解压目录>/backend/.venv/
 ```
 
 ### 20.2 Windows 发行版
@@ -814,6 +822,8 @@ backend/data/models/faster-whisper-small/model.bin
 备份：<发行版解压目录>/data/backups/
 日志：<发行版解压目录>/logs/ads-agent.log
 ```
+
+开发维护模式未通过轻量启动器运行时，默认数据仍位于 `backend/data/`；以实际启动方式设置的环境变量为准。
 
 不要在产品运行期间手动修改 SQLite 数据库，也不要通过直接删除数据目录代替产品中的清理和删除操作。
 
@@ -856,7 +866,7 @@ backend/data/models/faster-whisper-small/model.bin
 
 ## 22. 管理员与开发验证命令
 
-只修改业务数据时不需要运行这些命令。升级源码或重新制作发行版后，应执行：
+以下命令仅供开发维护人员，不是评委运行轻量源码包的步骤。只修改业务数据时不需要运行；升级源码或重新制作发行版后，应执行：
 
 ```powershell
 Set-Location frontend
