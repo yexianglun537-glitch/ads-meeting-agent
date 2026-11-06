@@ -96,6 +96,10 @@ Set-Location ..\backend
 .\.venv\Scripts\python.exe -m pytest tests -q
 ```
 
+## 提交材料
+
+项目说明书、方案说明书、测试验收与使用说明、开发概述和演示视频集中放在 [ads 提交版](materials/ads提交版/)。
+
 ## 核心文档
 
 - [当前产品需求与验收标准](docs/requirements/ADS会议智能体当前产品需求与验收标准.md)
